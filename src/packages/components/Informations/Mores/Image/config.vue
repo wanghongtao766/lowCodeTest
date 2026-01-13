@@ -25,7 +25,7 @@
     <SettingItemBox name="所属设备">
       <SettingItem>
         <div style="width: 260px">
-          <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" clearable filterable/>
+          <n-select v-model:value="optionData.deviceId" :options="deviceList" @update:value="handlepropertyListChange" clearable filterable/>
         </div>
       </SettingItem>
     </SettingItemBox>

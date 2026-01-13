@@ -98,6 +98,9 @@ const layerMode = ref<LayerModeEnum>(chartLayoutStore.getLayerType)
 const reverseList = computed(() => {
   const list: Array<CreateComponentType | CreateComponentGroupType> = cloneDeep(chartEditStore.getComponentList)
   return list.reverse()
+
+  // 测试不使用深克隆性能耗时
+  // return chartEditStore.getComponentList.reverse()
 })
 
 watch(

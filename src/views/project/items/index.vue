@@ -2,7 +2,6 @@
   <div class="go-project-items">
     <n-space vertical class="go-project-sider-top" style="margin-bottom: 15px;}">
       <project-layout-create></project-layout-create>
-      <!-- <div style="background-color: #fff; width: 200px; height: 200px;"></div> -->
     </n-space>
     <project-items-list></project-items-list>
   </div>

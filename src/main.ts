@@ -10,6 +10,7 @@ import { addCollection } from 'iconify-icon'
 import uimIcons from '@iconify/json/json/uim.json'
 import lineMdIcons from '@iconify/json/json/line-md.json'
 import wiIcons from '@iconify/json/json/wi.json'
+import { useDesignStore } from '@/store/modules/designStore/designStore'
 
 // 引入全局样式
 import '@/styles/pages/index.scss'
@@ -23,13 +24,13 @@ let cus1 = '';
 let cus2 = '';
 let index = cus.lastIndexOf(':');
 cus1 = cus.substring(0, index);
-console.log(cus1); //张三>李四
+// console.log(cus1); //张三>李四
 let index2 = cus1.lastIndexOf('//');
 cus2 = cus1.substring(index2 + 2, cus1.length);
-console.log(cus2, '-------------=======---------------'); //王五
+// console.log(cus2, '-------------=======---------------'); //王五
 // document.domain = cus2;
 // document.domain = '10.211.55.17';
-console.log('bbbbbbbbbbbb')
+// console.log('bbbbbbbbbbbb')
 
 
 // 注册图标
@@ -78,5 +79,20 @@ async function appInit() {
 
 appInit().then(() => {
   initFunction()
+  // 监听 父页面传递的消息
+  const designStore = useDesignStore()
+  window.addEventListener('message', function(event) {
+    // console.log(event.origin);
+    // 解析消息数据
+    const { type, data } = event.data;
+    // console.log(data, designStore.getDarkTheme);
+    if (typeof data === 'undefined') return
+    if (data === designStore.getDarkTheme) return
+    // changeTheme()
+    console.log('触发画布页面主题更改------------');
+    
+    designStore.changeTheme()
+    setHtmlTheme()
+  });
 })
 

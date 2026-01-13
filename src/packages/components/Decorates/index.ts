@@ -4,4 +4,5 @@ import FlowChart from './FlowChart'
 import Three from './Three'
 import Mores from './Mores'
 
-export const DecorateList = [...Borders, ...Decorates,...FlowChart, ...Three, ...Mores]
+export const DecorateList = [...Mores]
+// export const DecorateList = [...Borders, ...Decorates,...FlowChart, ...Three, ...Mores]

@@ -71,7 +71,7 @@ const setSelectOptions = (categorys: any) => {
   for (const val in categorys) {
     packages.selectOptions = categorys[val]
     break
-  }
+  }  
 }
 
 watch(

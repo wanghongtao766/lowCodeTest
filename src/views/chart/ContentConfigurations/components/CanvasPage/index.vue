@@ -22,6 +22,18 @@
       </n-form-item>
     </n-form>
 
+    <n-space>
+      <n-text>全局文字颜色</n-text>
+      <div class="picker-height">
+        <n-color-picker
+          size="small"
+          style="width: 220px"
+          v-model:value="globalTextColor"
+          :showPreview="true"
+        ></n-color-picker>
+      </div>
+    </n-space>
+
     <div class="upload-box">
       <n-upload
         v-model:file-list="uploadFileListRef"
@@ -126,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, watch, computed } from 'vue'
 import { backgroundImageSize } from '@/settings/designSetting'
 import { swatchesColors } from '@/settings/chartThemes/index'
 import { FileTypeEnum } from '@/enums/fileTypeEnum'
@@ -140,7 +152,9 @@ import { PreviewScaleEnum } from '@/enums/styleEnum'
 import { ResultEnum } from '@/enums/httpEnum'
 import { icon } from '@/plugins'
 import { uploadFile } from '@/api/path'
+import { useDesignStore } from '@/store/modules/designStore/designStore'
 
+const designStore = useDesignStore()
 const { ColorPaletteIcon } = icon.ionicons5
 const { ScaleIcon, FitToScreenIcon, FitToHeightIcon, FitToWidthIcon } = icon.carbon
 
@@ -152,8 +166,30 @@ const editCanvas = chartEditStore.getEditCanvas
 const uploadFileListRef = ref()
 const switchSelectColorLoading = ref(false)
 const selectColorValue = ref(0)
-
 const ChartThemeColor = loadAsyncComponent(() => import('./components/ChartThemeColor/index.vue'))
+
+const globalTextColor = computed({
+  get: () => designStore.globalTextColor,
+  set: (color) => {
+    designStore.setGlobalTextColor(color)
+    // 触发所有组件重新渲染（关键）
+    updateAllTextComponents(color)
+  }
+})
+
+const updateAllTextComponents = (color: string) => {
+  const chartEditStore = useChartEditStore()
+  // 遍历所有组件，更新文字颜色属性（根据实际组件属性名调整）
+  chartEditStore.getComponentList.forEach((component: any) => {
+    // 文本类组件
+    if (component.chartConfig.key === 'TextCommon') {
+      component.option.fontColor = color
+    }
+  })
+  // 刷新组件列表
+  chartEditStore.componentList = [...chartEditStore.componentList]
+}
+
 
 // 默认应用类型
 const selectColorOptions = [

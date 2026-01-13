@@ -130,92 +130,186 @@ export const useSync = () => {
       }
 
       if (e.isGroup) {
-        (e as CreateComponentGroupType).groupList.forEach(groupItem => {
-          intComponent(groupItem)
-        })
+        (e as CreateComponentGroupType).groupList.forEach(groupItem => { intComponent(groupItem) })
       } else {
         intComponent(e as CreateComponentType)
       }
     })
 
     // 创建函数-重新创建是为了处理类种方法消失的问题
+    // const create = async (
+    //   _componentInstance: CreateComponentType,
+    //   callBack?: (componentInstance: CreateComponentType) => void
+    // ) => {
+    //   // 补充 class 上的方法
+    //   let newComponent: CreateComponentType = await createComponent(_componentInstance.chartConfig)
+    //   if (_componentInstance.chartConfig.redirectComponent) {
+    //     _componentInstance.chartConfig.dataset && (newComponent.option.dataset = _componentInstance.chartConfig.dataset)
+    //     newComponent.chartConfig.title = _componentInstance.chartConfig.title
+    //     newComponent.chartConfig.chartFrame = _componentInstance.chartConfig.chartFrame
+    //   }
+    //   if (callBack) {
+    //     if (changeId) {
+    //       callBack(componentMerge(newComponent, { ..._componentInstance, id: getUUID() }))
+    //     } else {
+    //       callBack(componentMerge(newComponent, _componentInstance))
+    //     }
+    //   } else {
+    //     if (changeId) {
+    //       chartEditStore.addComponentList(
+    //         componentMerge(newComponent, { ..._componentInstance, id: getUUID() }),
+    //         false,
+    //         true
+    //       )
+    //     } else {
+    //       chartEditStore.addComponentList(componentMerge(newComponent, _componentInstance), false, true)
+    //     }
+    //   }
+    // }
+
     const create = async (
       _componentInstance: CreateComponentType,
       callBack?: (componentInstance: CreateComponentType) => void
     ) => {
-      // 补充 class 上的方法
-      let newComponent: CreateComponentType = await createComponent(_componentInstance.chartConfig)
-      if (_componentInstance.chartConfig.redirectComponent) {
-        _componentInstance.chartConfig.dataset && (newComponent.option.dataset = _componentInstance.chartConfig.dataset)
-        newComponent.chartConfig.title = _componentInstance.chartConfig.title
-        newComponent.chartConfig.chartFrame = _componentInstance.chartConfig.chartFrame
-      }
-      if (callBack) {
-        if (changeId) {
-          callBack(componentMerge(newComponent, { ..._componentInstance, id: getUUID() }))
-        } else {
-          callBack(componentMerge(newComponent, _componentInstance))
+      // 组件实例化改为异步（若内部有同步耗时操作，拆分为微任务）
+      return new Promise<void>(async (resolve) => {
+        let newComponent: CreateComponentType = await createComponent(_componentInstance.chartConfig)
+        if (_componentInstance.chartConfig.redirectComponent) {
+          _componentInstance.chartConfig.dataset && (newComponent.option.dataset = _componentInstance.chartConfig.dataset)
+          newComponent.chartConfig.title = _componentInstance.chartConfig.title
+          newComponent.chartConfig.chartFrame = _componentInstance.chartConfig.chartFrame
         }
-      } else {
-        if (changeId) {
-          chartEditStore.addComponentList(
-            componentMerge(newComponent, { ..._componentInstance, id: getUUID() }),
-            false,
-            true
-          )
+        if (callBack) {
+          if (changeId) {
+            callBack(componentMerge(newComponent, { ..._componentInstance, id: getUUID() }))
+          } else {
+            callBack(componentMerge(newComponent, _componentInstance))
+          }
         } else {
-          chartEditStore.addComponentList(componentMerge(newComponent, _componentInstance), false, true)
+          if (changeId) {
+            chartEditStore.addComponentList(
+              componentMerge(newComponent, { ..._componentInstance, id: getUUID() }),
+              false,
+              true
+            )
+          } else {
+            chartEditStore.addComponentList(componentMerge(newComponent, _componentInstance), false, true)
+          }
         }
-      }
+        resolve();
+      })
     }
-
     // 数据赋值
     for (const key in projectData) {
       // 组件
       if (key === ChartEditStoreEnum.COMPONENT_LIST) {
-        let loadIndex = 0
-        const listLength = projectData[key].length
-        for (const comItem of projectData[key]) {
-          // 设置加载数量
-          let percentage = parseInt((parseFloat(`${++loadIndex / listLength}`) * 100).toString())
-          chartLayoutStore.setItemUnHandle(ChartLayoutStoreEnum.PERCENTAGE, percentage)
-          // 判断类型
-          if (comItem.isGroup) {
-            // 创建分组
-            let groupClass = new PublicGroupConfigClass()
-            if (changeId) {
-              groupClass = componentMerge(groupClass, { ...comItem, id: getUUID() })
-            } else {
-              groupClass = componentMerge(groupClass, comItem)
-            }
-
-            // 异步注册子应用
-            const targetList: CreateComponentType[] = []
-            for (const groupItem of (comItem as CreateComponentGroupType).groupList) {
-              await create(groupItem, e => {
-                targetList.push(e)
-              })
-            }
-            groupClass.groupList = targetList
-
-            // 分组插入到列表
-            chartEditStore.addComponentList(groupClass, false, true)
-          } else {
-            await create(comItem as CreateComponentType)
-          }
+        // 2. 分批处理组件列表（核心优化）--------------------------------------------
+        const batchSize = 10; // 分批处理组件（根据性能调整）
+        const components = projectData.componentList;
+        const totalBatches = Math.ceil(components.length / batchSize);
+    
+        for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+          // 截取当前批次组件
+          const start = batchIndex * batchSize;
+          const end = Math.min(start + batchSize, components.length);
+          const batchComponents = components.slice(start, end);
+          // 3. 并行处理当前批次的组件
+          await Promise.all(
+            batchComponents.map(async (comItem) => {
+              if (comItem.isGroup) {
+                // 处理分组组件：并行创建子组件
+                const groupClass = changeId 
+                  ? componentMerge(new PublicGroupConfigClass(), { ...comItem, id: getUUID() })
+                  : componentMerge(new PublicGroupConfigClass(), comItem);
+                
+                // 并行处理分组内的子组件
+                const targetList = await Promise.all(
+                  (comItem as CreateComponentGroupType).groupList.map(groupItem => 
+                    new Promise<CreateComponentType>((resolve) => {
+                      create(groupItem, (e) => resolve(e));
+                    })
+                  )
+                );
+                groupClass.groupList = targetList;
+                chartEditStore.addComponentList(groupClass, false, true);
+              } else {
+                // 处理普通组件
+                await create(comItem as CreateComponentType)
+                // await new Promise<void>((resolve) => {
+                //   create(comItem as CreateComponentType, () => resolve());
+                // });
+              }
+            })
+          );
+    
+          // 4. 每批处理后更新进度并让出主线程
+          const percentage = Math.ceil(((batchIndex + 1) / totalBatches) * 100);
+          chartLayoutStore.setItemUnHandle(ChartLayoutStoreEnum.PERCENTAGE, percentage);
           if (percentage === 100) {
             // 清除历史记录
             chartHistoryStore.clearBackStack()
             chartHistoryStore.clearForwardStack()
           }
+          await new Promise(resolve => requestIdleCallback(resolve)); // 利用浏览器空闲时间
         }
       } else if (key === ChartEditStoreEnum.EDIT_CANVAS_CONFIG || key === ChartEditStoreEnum.REQUEST_GLOBAL_CONFIG) {
         componentMerge(chartEditStore[key], projectData[key], true)
       }
     }
-
     // 清除数量
     chartLayoutStore.setItemUnHandle(ChartLayoutStoreEnum.PERCENTAGE, 0)
+
+    // -----------------------------------------------------------------------
+
+    // 数据赋值
+    // for (const key in projectData) {
+    //   // 组件
+    //   if (key === ChartEditStoreEnum.COMPONENT_LIST) {
+    //     let loadIndex = 0
+    //     const listLength = projectData[key].length
+    //     for (const comItem of projectData[key]) {
+    //       // 设置加载数量
+    //       let percentage = parseInt((parseFloat(`${++loadIndex / listLength}`) * 100).toString())
+    //       chartLayoutStore.setItemUnHandle(ChartLayoutStoreEnum.PERCENTAGE, percentage)
+    //       // 判断类型
+    //       if (comItem.isGroup) {
+    //         // 创建分组
+    //         let groupClass = new PublicGroupConfigClass()
+    //         if (changeId) {
+    //           groupClass = componentMerge(groupClass, { ...comItem, id: getUUID() })
+    //         } else {
+    //           groupClass = componentMerge(groupClass, comItem)
+    //         }
+
+    //         // 异步注册子应用
+    //         const targetList: CreateComponentType[] = []
+    //         for (const groupItem of (comItem as CreateComponentGroupType).groupList) {
+    //           await create(groupItem, e => {
+    //             targetList.push(e)
+    //           })
+    //         }
+    //         groupClass.groupList = targetList
+
+    //         // 分组插入到列表
+    //         chartEditStore.addComponentList(groupClass, false, true)
+    //       } else {
+    //         console.time('test2')
+    //         await create(comItem as CreateComponentType)
+    //         console.timeEnd('test2')
+    //       }
+    //       if (percentage === 100) {
+    //         // 清除历史记录
+    //         chartHistoryStore.clearBackStack()
+    //         chartHistoryStore.clearForwardStack()
+    //       }
+    //     }
+        
+    //   } else if (key === ChartEditStoreEnum.EDIT_CANVAS_CONFIG || key === ChartEditStoreEnum.REQUEST_GLOBAL_CONFIG) {
+    //     componentMerge(chartEditStore[key], projectData[key], true)
+    //   }
+    // }
+    // // 清除数量
+    // chartLayoutStore.setItemUnHandle(ChartLayoutStoreEnum.PERCENTAGE, 0)
   }
 
   /**
@@ -250,12 +344,16 @@ export const useSync = () => {
     chartEditStore.componentList = []
     chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.START)
     try {
+      console.time('test2')
       const res = await fetchProjectApi({ projectId: fetchRouteParamsLocation() })
+      console.timeEnd('test2')
       if (res && res.code === ResultEnum.SUCCESS) {
         if (res.data) {
           updateStoreInfo(res.data)
+          console.time('test1')
           // 更新全局数据
           await updateComponent(JSONParse(res.data.content))
+          console.timeEnd('test1')
           return
         }else {
           chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_ID, fetchRouteParamsLocation())

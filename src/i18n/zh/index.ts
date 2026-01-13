@@ -18,7 +18,7 @@ const global = {
   lang_set: '语言设置',
   // 功能键
   r_edit: '编辑',
-  r_edit_sim: '简易编辑',
+  r_edit_sim: '挂载配置',
   r_preview: '预览',
   r_copy: '克隆',
   r_copy_success: '克隆成功！',

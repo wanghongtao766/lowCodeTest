@@ -17,6 +17,8 @@ const designStore = useDesignStore()
   // 更新
   const updateVal = (val: string) => {
     nextTick(async () => {
+      console.log('updateVal', val);
+      
       monacoEditor?.setValue(val)
       initReadOnly && monacoEditor?.updateOptions({ readOnly: false })
       await onFormatDoc()

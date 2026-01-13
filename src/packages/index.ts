@@ -17,13 +17,13 @@ const imagesModules: Record<string, { default: string }> = import.meta.glob('../
 })
 
 // * 所有图表
-export let packagesList: PackagesType = {
-  [PackagesCategoryEnum.CHARTS]: ChartList,
+export let packagesList: any = {
+  // [PackagesCategoryEnum.CHARTS]: ChartList,
   [PackagesCategoryEnum.INFORMATIONS]: InformationList,
-  [PackagesCategoryEnum.TABLES]: TableList,
+  // [PackagesCategoryEnum.TABLES]: TableList,
   [PackagesCategoryEnum.DECORATES]: DecorateList,
   [PackagesCategoryEnum.PHOTOS]: PhotoList,
-  [PackagesCategoryEnum.ICONS]: IconList
+  // [PackagesCategoryEnum.ICONS]: IconList
 }
 
 // 组件缓存, 可以大幅度提升组件加载速度

@@ -19,6 +19,7 @@ export interface MyRequestInstance extends Axios {
 
 const axiosInstance = axios.create({
   baseURL: `${ import.meta.env.VITE_PRO_PATH}`,
+  // baseURL: '/',
   timeout: ResultEnum.TIMEOUT
 }) as unknown as MyRequestInstance
 
@@ -47,8 +48,18 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   (res: AxiosResponse) => {
-      return Promise.resolve(res.data)
-  }
+    if (res.data.code === 401) {
+      window['$message'].error(window['$t']('认证失败! 重定向到登录页'))
+      console.log('发送消息给父页面 重定向到登录页');
+      window.parent.postMessage({type: 'isRelogin', code: 401 }, '*')
+      // console.log(import.meta.env.VITE_APP_LOGIN_PAGE + '?redirect=/projectChart');
+      
+      // setTimeout(() => {
+      //   location.href = import.meta.env.VITE_APP_LOGIN_PAGE + '?redirect=/projectChart';
+      // }, 1500);
+    }
+    return Promise.resolve(res.data)
+  },
   //   // 预览页面错误不进行处理
   //   if (isPreview()) {
   //     return Promise.resolve(res.data)
@@ -81,12 +92,13 @@ axiosInstance.interceptors.response.use(
   // },
   // (err: AxiosError) => {
   //   const status = err.response?.status
+  //   console.log(status);
   //   switch (status) {
   //     case 401:
   //       routerTurnByName(PageEnum.BASE_LOGIN_NAME)
   //       Promise.reject(err)
   //       break
-  //
+  
   //     default:
   //       Promise.reject(err)
   //       break

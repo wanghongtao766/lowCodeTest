@@ -85,7 +85,7 @@
     <n-card :bordered="false" role="dialog" size="small" aria-modal="true" style="width: 400px; height: 400px">
       <template #header>
         <n-space>
-          <n-text>简易编辑</n-text>
+          <n-text>挂载配置</n-text>
         </n-space>
       </template>
       <template #header-extra> </template>
@@ -97,6 +97,10 @@
             </setting-item-box>
             <setting-item-box name="子菜单" :alone="true">
               <n-select v-model:value="cardData.childProjectName"  :options="projectChildOptions" placeholder="请选择子菜单" clearable/>
+            </setting-item-box>
+
+            <setting-item-box name="暗色亮色" :alone="true">
+              <n-select v-model:value="cardData.color"  :options="themeOptions" placeholder="请选择暗亮色" clearable/>
             </setting-item-box>
             <setting-item-box name="项目名称" :alone="true">
                 <n-input
@@ -257,10 +261,10 @@ const chartEditStore = useChartEditStore()
 const { dataSyncUpdate } = useSync()
 
 const projectTypeOptions = ref([
-  // {
-  //   label: '首页',
-  //   value: 'home',
-  // },
+  {
+    label: '首页',
+    value: 'home',
+  },
   {
     label: '空调系统',
     value: 'energyStation',
@@ -278,9 +282,21 @@ const projectChildOptions = ref([
   }
 ])
 
+const themeOptions = ref([
+  {
+    label: '暗色',
+    value: 'dark',
+  },
+  {
+    label: '亮色',
+    value: 'light',
+  }
+])
+
 // 简易编辑
 const editSimHandle = () => {
   showModal.value = true
+  console.log(props.cardData);
 }
 
 

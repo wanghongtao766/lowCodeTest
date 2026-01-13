@@ -26,7 +26,7 @@ const themeColor = computed(() => {
 watch(
   () => chartLayoutStore.getPercentage,
   newValue => {
-    if (newValue === 0) {
+    if (newValue === 0 || newValue === 100) {
       setTimeout(() => {
         percentage.value = newValue
         showModal.value = false

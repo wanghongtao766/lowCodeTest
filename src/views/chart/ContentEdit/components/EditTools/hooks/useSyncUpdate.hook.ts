@@ -27,6 +27,8 @@ export const syncData = () => {
 
 // 同步数据到预览页
 export const syncDataToPreview = () => {
+  console.log('数据同步------------------------');
+  
   dispatchEvent(new CustomEvent(SavePageEnum.CHART_TO_PREVIEW, { detail: chartEditStore.getStorageInfo() }))
 }
 
