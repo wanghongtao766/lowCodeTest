@@ -82,17 +82,15 @@ appInit().then(() => {
   // 监听 父页面传递的消息
   const designStore = useDesignStore()
   window.addEventListener('message', function(event) {
-    // console.log(event.origin);
-    // 解析消息数据
     const { type, data } = event.data;
-    // console.log(data, designStore.getDarkTheme);
-    if (typeof data === 'undefined') return
-    if (data === designStore.getDarkTheme) return
-    // changeTheme()
-    console.log('触发画布页面主题更改------------');
-    
-    designStore.changeTheme()
-    setHtmlTheme()
+    console.log(data, designStore.getDarkTheme, type);
+    if (type === 'changeTheme') {
+      if (typeof data === 'undefined') return
+      if (data === designStore.getDarkTheme) return
+      console.log('触发画布页面主题更改------------');
+      designStore.changeTheme()
+      setHtmlTheme()
+    }
   });
 })
 
