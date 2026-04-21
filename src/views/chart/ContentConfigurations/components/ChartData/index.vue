@@ -1,7 +1,7 @@
 <template>
   <div class="go-chart-configurations-data" v-if="targetData">
     <setting-item-box name="请求方式" :alone="true">
-<!--      :disabled="isNotData"-->
+      <!-- :disabled="isNotData"-->
       <n-select v-model:value="targetData.request.requestDataType"  :options="selectOptions" />
     </setting-item-box>
     <!-- 静态 -->

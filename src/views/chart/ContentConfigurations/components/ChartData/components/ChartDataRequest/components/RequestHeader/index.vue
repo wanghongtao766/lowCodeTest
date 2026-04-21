@@ -47,14 +47,28 @@
           </template>
 
           <!-- json  -->
-          <template v-else-if="requestParamsBodyType === RequestBodyEnum['JSON']">
+           <template v-else-if="requestParamsBodyType === RequestBodyEnum['JSON']">
+            <n-select
+              class="go-mt-3"
+              v-model:value="requestParams[RequestParamsTypeEnum.BODY][requestParamsBodyType]"
+              :options="jsonOptions"
+              filterable
+              placeholder="请选择设备点位"
+              style="width: 600px;"
+            />
+          </template>
+
+          <!-- 原来 -->
+          <!-- <template v-else-if="requestParamsBodyType === RequestBodyEnum['JSON']">
             <monaco-editor
               v-model:modelValue="requestParams[RequestParamsTypeEnum.BODY][requestParamsBodyType]"
               width="600px"
               height="200px"
               language="json"
             />
-          </template>
+          </template> -->
+
+          
 
           <!-- xml  -->
           <template v-else-if="requestParamsBodyType === RequestBodyEnum['XML']">
@@ -86,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, PropType } from 'vue'
+import { ref, toRefs, PropType, onMounted, watch } from 'vue'
 import { MonacoEditor } from '@/components/Pages/MonacoEditor'
 import { RequestHeaderTable } from '../RequestHeaderTable/index'
 import { SettingItemBox, SettingItem } from '@/components/Pages/ChartItemSetting'
@@ -100,9 +114,15 @@ import {
   RequestBodyEnum,
   RequestHttpEnum
 } from '@/enums/httpEnum'
+import { listDevice, listDevice2 } from '@/api/path/project.api'
+
 
 const props = defineProps({
-  targetDataRequest: Object as PropType<RequestConfigType>
+  targetDataRequest: Object as PropType<RequestConfigType>,
+  requestUrl: {
+    type: String,
+    default: ''
+  }
 })
 
 const { requestHttpType, requestContentType, requestSQLContent, requestParams, requestParamsBodyType } = toRefs(
@@ -110,6 +130,8 @@ const { requestHttpType, requestContentType, requestSQLContent, requestParams, r
 )
 
 const tabValue = ref<RequestParamsTypeEnum>(RequestParamsTypeEnum.PARAMS)
+
+const jsonOptions = ref<{label: string, value: any}[]>([])
 
 // 更新参数表格数据
 const updateRequestParams = (paramsObj: RequestParamsObjType) => {
@@ -129,6 +151,98 @@ const updateRequestBodyTable = (paramsObj: RequestParamsObjType) => {
     requestParams.value[RequestParamsTypeEnum.BODY][requestParamsBodyType.value] = paramsObj
   }
 }
+
+// 设备点
+const fetchDeviceOptions = async () => {
+  console.log('调用设备点');
+  try {
+    const res: any = await listDevice({ pageSize: 10000, pageNum: 1 })
+    const rows = res?.rows
+    // console.log('rows', rows)
+    // console.log('res', res)
+    
+    if (rows && Array.isArray(rows)) {
+      const options: {label: any, value: any}[] = []
+      rows.forEach((item: any) => {
+        if (item.pointInfo && Array.isArray(item.pointInfo)) {
+          item.pointInfo.forEach((item2: any) => {
+            options.push({
+              label: item.name + '-' + item2.name,
+              value: JSON.stringify({ properties: [item2.identifier], deviceId: item.id })
+            })
+          })
+        }
+      })
+      jsonOptions.value = options
+    }
+  } catch (error) {
+    console.error('Failed to fetch device list:', error)
+  }
+  // const obj = {
+  //   "deviceId": "1848922911777587202",
+  //   "properties": ["pressure_value"]
+  // }
+}
+
+// 计算点
+const fetchComputedOptions = async () => {
+  console.log('调用计算点');
+  
+  try {
+    const res: any = await listDevice2({ pageSize: 10000, pageNum: 1 })
+    const rows = res?.rows
+    // console.log('rows', rows)
+    // console.log('res', res)
+    
+    if (rows && Array.isArray(rows)) {
+      const options: {label: any, value: any}[] = []
+      rows.forEach((item: any) => {
+        options.push({
+          label: item.name,
+          value: JSON.stringify({ configId: item.id })
+        })
+
+      })
+      jsonOptions.value = options
+    }
+  } catch (error) {
+    console.error('Failed to fetch device list:', error)
+  }
+
+  // const obj = {
+  //   "deviceId": "1848922911777587202",
+  //   "properties": ["pressure_value"]
+  // }
+}
+
+// 监听 props.requestUrl 变化
+watch(
+  () => props.requestUrl,
+  (newVal) => {
+    console.log(newVal, 'newVal');
+    // @ts-ignore
+    requestParams.value[RequestParamsTypeEnum.BODY][requestParamsBodyType.value] = ' '
+    if (newVal === '/compute/config/computeValueForSystem') {  // 计算点
+      fetchComputedOptions()
+    } else { // 设备点
+      fetchDeviceOptions()
+    }
+  },
+  // {
+  //   immediate: true
+  // }
+)
+
+
+onMounted(() => {
+  if (props.requestUrl === '/compute/config/computeValueForSystem') {  // 计算点
+    fetchComputedOptions()
+  } else { // 设备点
+    fetchDeviceOptions()
+  }
+  // fetchDeviceOptions()
+  // fetchComputedOptions()
+})
 </script>
 
 <style lang="scss" scoped>

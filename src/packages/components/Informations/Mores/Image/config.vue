@@ -29,13 +29,16 @@
         </div>
       </SettingItem>
     </SettingItemBox>
-    <SettingItemBox name="选择数据">
+
+    <!-- 准备注释的 -->
+    <!-- <SettingItemBox name="选择数据">
       <SettingItem>
         <div style="width: 260px">
         <n-select v-model:value="optionData.property" :options="propertyList" clearable filterable/>
         </div>
       </SettingItem>
-    </SettingItemBox>
+    </SettingItemBox> -->
+    
     <SettingItemBox name="弹窗开关">
       <SettingItem>
         <n-select v-model:value="optionData.imageStatus" :options="imageStatusList" clearable/>
@@ -86,7 +89,7 @@ const fitList = [
 ]
 
 const deviceList = ref([]);
-const propertyList = ref([]);
+const propertyList: any = ref([]);
 const imageStatusList = ref([
   {
     value:'0',
@@ -103,9 +106,11 @@ const initDeviceList = async () => {
     pageNum: 1,
     pageSize: 100000
   };
+
+  // @ts-ignore
   const { rows } = await listDevice(params);
 
-  deviceList.value = rows.map(e => {
+  deviceList.value = rows.map((e: any) => {
     const { id, name } = e
     return {
       value: id,
@@ -117,16 +122,16 @@ const initDeviceList = async () => {
   }
 };
 
-/** 节点单击事件设备*/
-const handlepropertyListChange = async(data,p) => {
+// 所属设备选择变更
+const handlepropertyListChange = async(data: any, p?: any) => {
   props.optionData.deviceId = data;
   if(p!=='1'){
     props.optionData.property =''
     props.optionData.imageStatus =''
   }
-  const res = await getRealTimeData([data]);
+  const res: any = await getRealTimeData([data]);
   propertyList.value = []
-  res.data[0].pointInfo.map(item => {
+  res.data[0].pointInfo.map((item: any) => {
     propertyList.value.push({
       value: item.identifier,
       label: item.name

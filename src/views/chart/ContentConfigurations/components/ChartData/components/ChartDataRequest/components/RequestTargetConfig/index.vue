@@ -26,12 +26,15 @@
     <setting-item name="请求方式 & URL 地址">
       <n-input-group>
         <n-select class="select-type-options" v-model:value="requestHttpType" :options="selectTypeOptions" />
-        <n-input v-model:value.trim="requestUrl" :min="1" placeholder="请输入地址（去除前置URL）">
+
+        <n-select style="width: 100%" v-model:value="requestUrl" :options="deviceListAndComputedList" />
+        <!-- 原来 -->
+        <!-- <n-input v-model:value.trim="requestUrl" :min="1" placeholder="请输入地址（去除前置URL）">
           <template #prefix>
             <n-text>{{ requestOriginUrl }}</n-text>
             <n-divider vertical />
           </template>
-        </n-input>
+        </n-input> -->
       </n-input-group>
       <!-- 组件url -->
     </setting-item>
@@ -51,7 +54,7 @@
     </setting-item>
   </setting-item-box>
   <setting-item-box name="选择方式" class="go-mt-0">
-    <request-header :targetDataRequest="targetDataRequest"></request-header>
+    <request-header :targetDataRequest="targetDataRequest" :requestUrl="requestUrl"></request-header>
   </setting-item-box>
 </template>
 
@@ -95,6 +98,17 @@ const { requestOriginUrl } = toRefs(chartEditStore.getRequestGlobalConfig)
 const { requestInterval, requestIntervalUnit, requestHttpType, requestUrl } = toRefs(
   props.targetDataRequest as RequestConfigType
 )
+
+const deviceListAndComputedList =  [
+  {
+    label: '设备点',
+    value: '/thing/device/realTimeDataWithPropertyForSystem'
+  },
+  {
+    label: '计算点',
+    value: '/compute/config/computeValueForSystem'
+  }
+]
 
 const apiList = [
   {

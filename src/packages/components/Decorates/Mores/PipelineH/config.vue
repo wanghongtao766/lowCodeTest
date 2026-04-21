@@ -20,7 +20,16 @@
         <n-select v-model:value="optionData.line_class" :options="options" clearable/>
       </SettingItem>
     </SettingItemBox>
-    <SettingItemBox name="点位类型">
+
+    <SettingItemBox name="所属设备">
+      <SettingItem>
+        <div style="width: 260px">
+          <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" multiple clearable filterable/>
+        </div>
+      </SettingItem>
+    </SettingItemBox>
+
+    <!-- <SettingItemBox name="点位类型">
       <SettingItem>
         <div style="width: 260px">
           <n-select v-model:value="optionData.pointType" :options="pointTypeList" @change="handlepointTypeListChange" filterable/>
@@ -28,20 +37,20 @@
       </SettingItem>
     </SettingItemBox>
     <div v-if="optionData.pointType==='s'">
-    <SettingItemBox name="所属设备">
-      <SettingItem>
-        <div style="width: 260px">
-        <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" clearable filterable/>
-        </div>
-      </SettingItem>
-    </SettingItemBox>
-    <SettingItemBox name="选择数据">
-      <SettingItem>
-        <div style="width: 260px">
-        <n-select v-model:value="optionData.property" :options="propertyList" clearable filterable/>
-        </div>
-      </SettingItem>
-    </SettingItemBox>
+      <SettingItemBox name="所属设备">
+        <SettingItem>
+          <div style="width: 260px">
+          <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" clearable filterable/>
+          </div>
+        </SettingItem>
+      </SettingItemBox>
+      <SettingItemBox name="选择数据111111">
+        <SettingItem>
+          <div style="width: 260px">
+          <n-select v-model:value="optionData.property" :options="propertyList" clearable filterable/>
+          </div>
+        </SettingItem>
+      </SettingItemBox>
       <SettingItemBox name="编号">
         <SettingItem>
           <n-input-number :min="1" v-model:value="optionData.deviceCode"/>
@@ -61,7 +70,7 @@
           <n-input-number :min="1" v-model:value="optionData.deviceCode2"/>
         </SettingItem>
       </SettingItemBox>
-    </div>
+    </div> -->
   </CollapseItem>
 </template>
 
@@ -118,8 +127,8 @@ const handleColorChange = (e: number) => {
   }
 }
 
-const deviceList = ref([]);
-const deviceList2 = ref([]);
+const deviceList = ref([]); // 设备点所属设备列表
+const deviceList2 = ref([]); // 计算点所属设备列表
 const propertyList = ref([]);
 const pointTypeList = ref([
   {
@@ -132,7 +141,7 @@ const pointTypeList = ref([
   }
 ]);
 
-/** 初始化设备数据 */
+/** 点位类型 select 更改 */
 const handlepointTypeListChange = async (data) => {
   props.optionData.pointType = data;
   if(data==='s'){
@@ -162,12 +171,13 @@ const initDeviceList = async () => {
       label: name
     }
   })
+
   if(props.optionData.deviceId){
     handlepropertyListChange(props.optionData.deviceId,'1')
   }
 };
 
-/** 节点单击事件设备*/
+/** 设备点 所属设备 select change */
 const handlepropertyListChange = async(data,p) => {
   props.optionData.deviceId = data;
   if(p!=='1'){
@@ -183,7 +193,7 @@ const handlepropertyListChange = async(data,p) => {
   });
 };
 
-/** 初始化计算数据 */
+/** 初始化 计算点所属的设备列表 */
 const initDeviceList2 = async () => {
   let params = {
     pageNum: 1,
@@ -212,5 +222,7 @@ onMounted(() => {
     props.optionData.deviceCode2 = 1
   }
   handlepointTypeListChange(props.optionData.pointType)
+  initDeviceList();
+
 });
 </script>

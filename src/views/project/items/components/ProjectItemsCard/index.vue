@@ -2,7 +2,7 @@
   <div v-if="cardData" class="go-items-list-card">
     <n-card hoverable size="small">
       <div class="list-content">
-        <!-- 顶部按钮 -->
+        <!-- 顶部按钮 红色绿色按钮 -->
         <div class="list-content-top">
           <mac-os-control-btn
             class="top-btn"
@@ -11,7 +11,7 @@
             @resize="resizeHandle"
          ></mac-os-control-btn>
         </div>
-        <!-- 中间 -->
+        <!-- 封面图 -->
         <div class="list-content-img" @click="resizeHandle">
           <n-image
             object-fit="contain"
@@ -80,7 +80,7 @@
       </template>
     </n-card>
   </div>
-  <!-- 弹窗 -->
+  <!-- 挂在配置 弹窗 -->
   <n-modal class="go-chart-data-monaco-editor" v-model:show="showModal" :mask-closable="false" :closeOnEsc="false">
     <n-card :bordered="false" role="dialog" size="small" aria-modal="true" style="width: 400px; height: 400px">
       <template #header>
@@ -121,10 +121,10 @@
                 >
                 </n-input-number>
             </setting-item-box>
-            <setting-item-box name="请求名称" :alone="true" style="display: none">
+            <!-- <setting-item-box name="请求名称" :alone="true" style="display: none">
               <n-input size="small" :placeholder="pondData?.dataPondName || '暂无'" :disabled="true">
               </n-input>
-            </setting-item-box>
+            </setting-item-box> -->
 
           </n-scrollbar>
         </n-space>
@@ -154,6 +154,10 @@ import { ProjectInfoEnum } from '@/store/modules/chartEditStore/chartEditStore.d
 import { updateProjectApi } from '@/api/path'
 import { useSync } from '@/views/chart/hooks/useSync.hook'
 import {SettingItemBox} from "@/components/Pages/ChartItemSetting";
+import { useDataListInit } from '../ProjectItemsList/hooks/useData.hook'
+
+const { fetchList } = useDataListInit()
+
 
 const {
   EllipsisHorizontalCircleSharpIcon,
@@ -169,7 +173,7 @@ const {
 const emit = defineEmits(['preview', 'delete', 'resize', 'edit', 'release'])
 
 const props = defineProps({
-  cardData: Object as PropType<Chartype>
+  cardData: Object as any
 })
 
 const fnBtnList = reactive([
@@ -309,8 +313,10 @@ const closeFilter = () => {
 const saveFilter = async() => {
   chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_NAME, props.cardData || '')
   const res = (await updateProjectApi(props.cardData))
+
   if (res && res.code === ResultEnum.SUCCESS) {
-    dataSyncUpdate()
+    window['$message'].success('修改成功')
+    fetchList()
   } else {
     httpErrorHandle()
   }

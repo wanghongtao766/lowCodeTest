@@ -65,7 +65,7 @@ export const saveProjectApi = async (data: object) => {
 // }
 
 // * 修改项目基础信息
-export const updateProjectApi = async (data: object) => {
+export const updateProjectApi = async (data: any) => {
   try {
     const res = await http(RequestHttpEnum.POST)(`${axiosPre}${ModuleTypeEnum.PROJECT}/edit`, data)
     return res
