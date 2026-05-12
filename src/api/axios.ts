@@ -18,8 +18,8 @@ export interface MyRequestInstance extends Axios {
 }
 
 const axiosInstance = axios.create({
-  baseURL: `${ import.meta.env.VITE_PRO_PATH}`,
-  // baseURL: '/',
+  // baseURL: `${ import.meta.env.VITE_PRO_PATH}`,
+  baseURL: '/prod-api',
   timeout: ResultEnum.TIMEOUT
 }) as unknown as MyRequestInstance
 

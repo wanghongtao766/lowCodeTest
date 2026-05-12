@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import { OUTPUT_DIR, brotliSize, chunkSizeWarningLimit, terserOptions, rollupOptions } from './build/constant'
 import viteCompression from 'vite-plugin-compression'
-import { axiosPre,axiosPre2 } from './src/settings/httpSetting'
+import { axiosPre, axiosPre2 } from './src/settings/httpSetting'
 import { viteMockServe } from 'vite-plugin-mock'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
@@ -52,6 +52,19 @@ export default ({ mode }) => defineConfig({
         changeOrigin: true,
         ws: false,
         secure: true,
+      },
+      '/prod-api': {
+        // @ts-ignore
+        target: loadEnv(mode, process.cwd()).VITE_APP_BASE_API, // 使用env的变量
+        changeOrigin: true,
+        ws: false,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/prod-api/, '')
+      },
+      '/private': {
+        target: "http://192.168.0.188", // 使用env的变量
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/private/, '')
       }
     }
   },

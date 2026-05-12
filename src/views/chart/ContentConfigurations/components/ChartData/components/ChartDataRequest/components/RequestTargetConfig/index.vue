@@ -102,11 +102,11 @@ const { requestInterval, requestIntervalUnit, requestHttpType, requestUrl } = to
 const deviceListAndComputedList =  [
   {
     label: '设备点',
-    value: '/thing/device/realTimeDataWithPropertyForSystem'
+    value: '/api/thing/device/realTimeDataWithPropertyForSystem'
   },
   {
     label: '计算点',
-    value: '/compute/config/computeValueForSystem'
+    value: '/api/compute/config/computeValueForSystem'
   }
 ]
 
