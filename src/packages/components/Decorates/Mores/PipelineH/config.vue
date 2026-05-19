@@ -1,77 +1,95 @@
 <template>
-  <CollapseItem name="管道" :expanded="true">
-    <SettingItemBox name="默认颜色">
-      <SettingItem>
-        <n-select v-model:value="optionData.color_type" :options="colorOptions" @update:value="handleColorChange" />
-      </SettingItem>
-    </SettingItemBox>
-    <SettingItemBox name="管道颜色">
-      <SettingItem>
-        <n-color-picker size="small" :modes="['hex']" v-model:value="optionData.o_color"></n-color-picker>
-      </SettingItem>
-    </SettingItemBox>
-    <SettingItemBox name="水流颜色">
-      <SettingItem>
-        <n-color-picker size="small" :modes="['hex']" v-model:value="optionData.i_color"></n-color-picker>
-      </SettingItem>
-    </SettingItemBox>
-    <SettingItemBox name="正常流向">
-      <SettingItem>
-        <n-select v-model:value="optionData.line_class" :options="options" clearable/>
-      </SettingItem>
-    </SettingItemBox>
+  <div class="go-config-pipeline-h">
+    <CollapseItem name="管道" :expanded="true">
+      <SettingItemBox name="默认颜色">
+        <SettingItem>
+          <n-select v-model:value="optionData.color_type" :options="colorOptions" @update:value="handleColorChange" />
+        </SettingItem>
+      </SettingItemBox>
+      <SettingItemBox name="管道颜色">
+        <SettingItem>
+          <n-color-picker size="small" :modes="['hex']" v-model:value="optionData.o_color"></n-color-picker>
+        </SettingItem>
+      </SettingItemBox>
+      <SettingItemBox name="水流颜色">
+        <SettingItem>
+          <n-color-picker size="small" :modes="['hex']" v-model:value="optionData.i_color"></n-color-picker>
+        </SettingItem>
+      </SettingItemBox>
+      <SettingItemBox name="正常流向">
+        <SettingItem>
+          <n-select v-model:value="optionData.line_class" :options="options" clearable/>
+        </SettingItem>
+      </SettingItemBox>
 
-    <SettingItemBox name="所属设备">
-      <SettingItem>
-        <div style="width: 260px">
-          <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" multiple clearable filterable/>
-        </div>
-      </SettingItem>
-    </SettingItemBox>
+      <SettingItemBox name="阀门连接模式" class="mode-box">
+        <SettingItem>
+          <div style="width: 230px">
+            <n-select v-model:value="optionData.gateLinkMode" :options="modeList" />
+          </div>
+        </SettingItem>
+      </SettingItemBox>
 
-    <!-- <SettingItemBox name="点位类型">
-      <SettingItem>
-        <div style="width: 260px">
-          <n-select v-model:value="optionData.pointType" :options="pointTypeList" @change="handlepointTypeListChange" filterable/>
-        </div>
-      </SettingItem>
-    </SettingItemBox>
-    <div v-if="optionData.pointType==='s'">
+      <SettingItemBox name="水泵连接模式" class="mode-box">
+        <SettingItem>
+          <div style="width: 230px">
+            <n-select v-model:value="optionData.pumpLinkMode" :options="modeList" />
+          </div>
+        </SettingItem>
+      </SettingItemBox>
+
       <SettingItemBox name="所属设备">
         <SettingItem>
           <div style="width: 260px">
-          <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" clearable filterable/>
+            <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" multiple clearable filterable/>
           </div>
         </SettingItem>
       </SettingItemBox>
-      <SettingItemBox name="选择数据111111">
+
+      <!-- <SettingItemBox name="点位类型">
         <SettingItem>
           <div style="width: 260px">
-          <n-select v-model:value="optionData.property" :options="propertyList" clearable filterable/>
+            <n-select v-model:value="optionData.pointType" :options="pointTypeList" @change="handlepointTypeListChange" filterable/>
           </div>
         </SettingItem>
       </SettingItemBox>
-      <SettingItemBox name="编号">
-        <SettingItem>
-          <n-input-number :min="1" v-model:value="optionData.deviceCode"/>
-        </SettingItem>
-      </SettingItemBox>
-    </div>
-    <div v-if="optionData.pointType==='j'">
-      <SettingItemBox name="所属设备">
-        <SettingItem>
-          <div style="width: 260px">
-            <n-select v-model:value="optionData.deviceId2" :options="deviceList2" clearable filterable/>
-          </div>
-        </SettingItem>
-      </SettingItemBox>
-      <SettingItemBox name="编号">
-        <SettingItem>
-          <n-input-number :min="1" v-model:value="optionData.deviceCode2"/>
-        </SettingItem>
-      </SettingItemBox>
-    </div> -->
-  </CollapseItem>
+      <div v-if="optionData.pointType==='s'">
+        <SettingItemBox name="所属设备">
+          <SettingItem>
+            <div style="width: 260px">
+            <n-select v-model:value="optionData.deviceId" :options="deviceList" @change="handlepropertyListChange" clearable filterable/>
+            </div>
+          </SettingItem>
+        </SettingItemBox>
+        <SettingItemBox name="选择数据111111">
+          <SettingItem>
+            <div style="width: 260px">
+            <n-select v-model:value="optionData.property" :options="propertyList" clearable filterable/>
+            </div>
+          </SettingItem>
+        </SettingItemBox>
+        <SettingItemBox name="编号">
+          <SettingItem>
+            <n-input-number :min="1" v-model:value="optionData.deviceCode"/>
+          </SettingItem>
+        </SettingItemBox>
+      </div>
+      <div v-if="optionData.pointType==='j'">
+        <SettingItemBox name="所属设备">
+          <SettingItem>
+            <div style="width: 260px">
+              <n-select v-model:value="optionData.deviceId2" :options="deviceList2" clearable filterable/>
+            </div>
+          </SettingItem>
+        </SettingItemBox>
+        <SettingItemBox name="编号">
+          <SettingItem>
+            <n-input-number :min="1" v-model:value="optionData.deviceCode2"/>
+          </SettingItem>
+        </SettingItemBox>
+      </div> -->
+    </CollapseItem>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -99,6 +117,17 @@ const options = ref([
   {
     value: 'svg_ani_flow_stop',
     label: '停止'
+  }
+])
+
+const modeList = ref([
+  {
+    value: 1,
+    label: '串联'
+  },
+  {
+    value: 2,
+    label: '并联'
   }
 ])
 
@@ -226,3 +255,20 @@ onMounted(() => {
 
 });
 </script>
+
+<style lang="scss">
+.go-config-pipeline-h {
+  .mode-box {
+    .item-left {
+      flex: 0 0 85px !important;
+      width: 85px !important;
+      white-space: nowrap !important;
+    }
+    .item-right {
+      flex: 1 !important;
+      width: auto !important;
+    }
+  }
+}
+</style>
+

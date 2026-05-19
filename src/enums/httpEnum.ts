@@ -98,9 +98,9 @@ export const RequestBodyEnumList = [
  * @description: 请求参数类型
  */
 export enum RequestParamsTypeEnum {
-  PARAMS = 'Params',
+  // PARAMS = 'Params',
   BODY = 'Body',
-  HEADER = 'Header',
+  // HEADER = 'Header',
 }
 
 /**
@@ -110,8 +110,8 @@ export type RequestParamsObjType = {
   [T: string]: string
 }
 export type RequestParams = {
-  [RequestParamsTypeEnum.PARAMS]: RequestParamsObjType
-  [RequestParamsTypeEnum.HEADER]: RequestParamsObjType
+  // [RequestParamsTypeEnum.PARAMS]: RequestParamsObjType
+  // [RequestParamsTypeEnum.HEADER]: RequestParamsObjType
   [RequestParamsTypeEnum.BODY]: {
     [RequestBodyEnum.FORM_DATA]: RequestParamsObjType
     [RequestBodyEnum.X_WWW_FORM_URLENCODED]: RequestParamsObjType

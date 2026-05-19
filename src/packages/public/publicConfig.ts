@@ -21,7 +21,7 @@ import cloneDeep from 'lodash/cloneDeep'
 // 请求基础属性
 export const requestConfig: RequestConfigType = {
   requestDataType: RequestDataTypeEnum.STATIC,
-  requestHttpType: RequestHttpEnum.GET,
+  requestHttpType: RequestHttpEnum.POST,
   requestUrl: '',
   requestInterval: undefined,
   requestIntervalUnit: RequestHttpIntervalEnum.SECOND,
@@ -37,8 +37,8 @@ export const requestConfig: RequestConfigType = {
       json: '',
       xml: ''
     },
-    Header: {},
-    Params: {}
+    // Header: {},
+    // Params: {}
   }
 }
 

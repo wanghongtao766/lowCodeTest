@@ -15,7 +15,9 @@ export const option = {
   imageStatus:'',
   pointType:'s',
   deviceCode:1,
-  deviceCode2:1
+  deviceCode2:1,
+  gateLinkMode: 2,
+  pumpLinkMode: 2
 }
 
 export default class Config extends PublicConfigClass implements CreateComponentType {

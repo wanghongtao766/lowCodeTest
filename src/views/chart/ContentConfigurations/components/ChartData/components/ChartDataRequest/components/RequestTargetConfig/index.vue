@@ -8,8 +8,8 @@
     style="padding-right: 25px"
   >
     <template #name>
-      地址
-      <n-tooltip trigger="hover" v-if="isDev()">
+      点位类型
+      <!-- <n-tooltip trigger="hover" v-if="isDev()">
         <template #trigger>
           <n-icon size="21" :depth="3">
             <help-outline-icon></help-outline-icon>
@@ -21,7 +21,7 @@
             <n-text type="info"> {{ item.value }} </n-text>
           </li>
         </ul>
-      </n-tooltip>
+      </n-tooltip> -->
     </template>
     <setting-item name="请求方式 & URL 地址">
       <n-input-group>
@@ -38,7 +38,7 @@
       </n-input-group>
       <!-- 组件url -->
     </setting-item>
-    <setting-item name="更新间隔，为 0 只会初始化">
+    <!-- <setting-item name="更新间隔，为 0 只会初始化">
       <n-input-group>
         <n-input-number
           v-model:value.trim="requestInterval"
@@ -48,10 +48,10 @@
           placeholder="默认使用全局数据"
         >
         </n-input-number>
-        <!-- 单位 -->
+        单位
         <n-select class="select-time-options" v-model:value="requestIntervalUnit" :options="selectTimeOptions" />
       </n-input-group>
-    </setting-item>
+    </setting-item> -->
   </setting-item-box>
   <setting-item-box name="选择方式" class="go-mt-0">
     <request-header :targetDataRequest="targetDataRequest" :requestUrl="requestUrl"></request-header>
@@ -102,11 +102,11 @@ const { requestInterval, requestIntervalUnit, requestHttpType, requestUrl } = to
 const deviceListAndComputedList =  [
   {
     label: '设备点',
-    value: '/api/thing/device/realTimeDataWithPropertyForSystem'
+    value: '/thing/device/realTimeDataWithPropertyForSystem'
   },
   {
     label: '计算点',
-    value: '/api/compute/config/computeValueForSystem'
+    value: '/compute/config/computeValueForSystem'
   }
 ]
 

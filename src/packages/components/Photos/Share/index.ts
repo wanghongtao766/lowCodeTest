@@ -6,6 +6,7 @@ import { ChatCategoryEnum, ChatCategoryEnumName } from '../index.d'
 const imageList = [
   // { imageName: 'carousel1', imageUrl: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg' },
   // { imageName: 'carousel2', imageUrl: 'https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg' },
+  // { imageName: '三通-黄', imageUrl: 'http://192.168.0.188/private/image/三通-黄.svg' },
   { imageName: '三通-黄', imageUrl: '/private/image/三通-黄.svg' },
   { imageName: '三通-蓝', imageUrl: '/private/image/三通-蓝.svg' },
   { imageName: '三通-绿', imageUrl: '/private/image/三通-绿.svg' },
@@ -13,12 +14,13 @@ const imageList = [
   { imageName: '弯头-蓝', imageUrl: '/private/image/弯头-蓝.svg' },
   { imageName: '弯头-绿', imageUrl: '/private/image/弯头-绿.svg' },
 
-
-
-
   { imageName: '冷水主机', imageUrl: '/private/image/lengji.png' },
   { imageName: '水泵', imageUrl: '/private/image/shuibeng.png' },
   { imageName: '冷却塔', imageUrl: '/private/image/lengqueta.png' },
+  { imageName: '冷却塔3', imageUrl: '/private/image/冷却塔3.png' },
+  { imageName: '冷却塔4', imageUrl: '/private/image/冷却塔4.png' },
+  { imageName: '冷却塔5', imageUrl: '/private/image/冷却塔5.png' },
+  { imageName: '冷却塔6', imageUrl: '/private/image/冷却塔6.png' },
   { imageName: '水阀', imageUrl: '/private/image/famen.svg' },
   { imageName: '蓄冰槽', imageUrl: '/private/image/xulengguan-huise.svg' },
   { imageName: '板换', imageUrl: '/private/image/banhuan.svg' },

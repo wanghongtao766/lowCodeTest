@@ -3,7 +3,7 @@
     <div style="width: 600px">
       <n-tabs v-model:value="requestContentType" type="segment" size="small">
         <n-tab :name="RequestContentTypeEnum.DEFAULT" tab="普通请求"> </n-tab>
-        <n-tab :name="RequestContentTypeEnum.SQL" tab="SQL 请求"> </n-tab>
+        <!-- <n-tab :name="RequestContentTypeEnum.SQL" tab="SQL 请求"> </n-tab> -->
       </n-tabs>
     </div>
     <div v-show="requestContentType === RequestContentTypeEnum.DEFAULT">
@@ -19,13 +19,13 @@
 
         <!-- 选择了 body -->
         <div v-else>
-          <n-radio-group v-model:value="requestParamsBodyType" name="radiogroup">
+          <!-- <n-radio-group v-model:value="requestParamsBodyType" name="radiogroup">
             <n-space>
-              <n-radio v-for="bodyEnum in RequestBodyEnumList" :key="bodyEnum" :value="bodyEnum">
+              <n-radio v-for="bodyEnum in RequestBodyEnumList" :key="bodyEnum" :value="bodyEnum" v-show="bodyEnum === RequestBodyEnum.JSON">
                 {{ bodyEnum }}
               </n-radio>
             </n-space>
-          </n-radio-group>
+          </n-radio-group> -->
 
           <!-- 为 none 时 -->
           <n-card class="go-mt-3 go-pb-3" v-if="requestParamsBodyType === RequestBodyEnum['NONE']">
@@ -48,14 +48,16 @@
 
           <!-- json  -->
            <template v-else-if="requestParamsBodyType === RequestBodyEnum['JSON']">
-            <n-select
-              class="go-mt-3"
-              v-model:value="requestParams[RequestParamsTypeEnum.BODY][requestParamsBodyType]"
-              :options="jsonOptions"
-              filterable
-              placeholder="请选择设备点位"
-              style="width: 600px;"
-            />
+            <div class="go-mt-3" style="display: flex; align-items: center;">
+              <span style="white-space: nowrap; margin-right: 12px;">选择点位</span>
+              <n-select
+                v-model:value="requestParams[RequestParamsTypeEnum.BODY][requestParamsBodyType]"
+                :options="jsonOptions"
+                filterable
+                placeholder="请选择设备点位"
+                style="width: 600px;"
+              />
+            </div>
           </template>
 
           <!-- 原来 -->
@@ -129,7 +131,7 @@ const { requestHttpType, requestContentType, requestSQLContent, requestParams, r
   props.targetDataRequest as RequestConfigType
 )
 
-const tabValue = ref<RequestParamsTypeEnum>(RequestParamsTypeEnum.PARAMS)
+const tabValue = ref<RequestParamsTypeEnum>(RequestParamsTypeEnum.BODY)
 
 const jsonOptions = ref<{label: string, value: any}[]>([])
 
@@ -235,6 +237,7 @@ watch(
 
 
 onMounted(() => {
+  requestParamsBodyType.value = RequestBodyEnum.JSON
   if (props.requestUrl === '/compute/config/computeValueForSystem') {  // 计算点
     fetchComputedOptions()
   } else { // 设备点
