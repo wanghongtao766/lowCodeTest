@@ -1,8 +1,8 @@
 <template>
   <setting-item-box name="尺寸">
+    <!-- :min="50" -->
     <n-input-number
       v-model:value="chartAttr.w"
-      :min="50"
       :disabled="isGroup"
       size="small"
       placeholder="px"
@@ -11,9 +11,9 @@
         <n-text depth="3">宽度</n-text>
       </template>
     </n-input-number>
+    <!-- :min="50" -->
     <n-input-number
       v-model:value="chartAttr.h"
-      :min="50"
       :disabled="isGroup"
       size="small"
       placeholder="px"
